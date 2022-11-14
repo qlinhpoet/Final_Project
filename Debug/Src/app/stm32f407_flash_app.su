@@ -1,0 +1,2 @@
+stm32f407_flash_app.c:34:19:Fls_Write	32	static
+stm32f407_flash_app.c:80:19:Fls_Erase	24	static
