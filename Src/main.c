@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "stm32f407vg.h"
+#include "app/stm32f407_flash_app.h"
 
 uint32_t *pSyst_CSR = (uint32_t*)0xE000E010;
 uint32_t *pSYST_RVR = (uint32_t*)0xE000E014;
@@ -17,14 +18,15 @@ void Systick_Delay_ms(uint32_t u32Delay);
 
 void GPIO_Lib_Config();
 uint32_t s;
-uint32_t BufferWrite[3] = {0x100,0x200,0x300};
+uint32_t BufferWrite[3] = {0x1,0x2,0x3};
+uint32_t *BufferRead;
 int main()
 {
 	GPIO_Lib_Config();
-	s = Flash_Read((uint32_t)0x0800C000);
+	s = Fls_Read((uint32_t)SECTOR_3, &BufferRead, 3);
 	Fls_Erase(Fls_Sector_3, 1);
 	Fls_Write((uint32_t)0x0800C000, BufferWrite, 3, FALSE);
-	s = Flash_Read((uint32_t)0x0800C000);
+	s = Fls_Read((uint32_t)SECTOR_3, &BufferRead, 3);
 	while(1)
 	{
 		GPIO_TogglePin(GPIOD, GPIO_PIN_13);

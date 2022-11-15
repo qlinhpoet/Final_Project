@@ -8,12 +8,21 @@
 
 #include <driver/stm32f407_flash_driver.h>
 
-uint32_t Flash_Read(volatile uint32_t u32StartAddr)
+FLS_JobResultType Flash_Read_Driver(volatile uint32_t u32StartAddr,
+					uint32_t *pDestAddressPtr,
+					uint32_t u322Length
+					)
 {
-	return *(uint32_t*)(u32StartAddr);
+	FLS_JobResultType Fls_JobResult = FLS_JOB_OK;
+	for(int i=0; i < u322Length; i++)
+	{
+		*(uint32_t *)(pDestAddressPtr + i) = *(uint32_t*)(u32StartAddr +i*4);
+
+	}
+	return Fls_JobResult;
 }
 
-void FLASH_Write_Word(	volatile uint32_t u32StartAddr,
+FLS_JobResultType FLASH_Write_Word(	volatile uint32_t u32StartAddr,
 						const uint32_t u32Length,
 						uint32_t *BufferWrite)
 {
@@ -39,15 +48,15 @@ void FLASH_Write_Word(	volatile uint32_t u32StartAddr,
 	}
 	
 	while((FLASH->SR & FLASH_SR_BSY) == FLASH_SR_BSY);
-	//return FLS_JOB_OK;
+	return FLS_JOB_OK;
 }
 
-void Flash_ASync_Erase(volatile uint8_t sector, uint32_t u32TimeOut)
+FLS_JobResultType Flash_ASync_Erase(volatile uint8_t sector, uint32_t u32TimeOut)
 {
 
 }
 
-void Flash_Sync_Erase(volatile uint8_t sector, uint32_t u32TimeOut)
+FLS_JobResultType Flash_Sync_Erase(volatile uint8_t sector, uint32_t u32TimeOut)
 {
 	FLS_JobResultType eRetVal = FLS_JOB_OK;
 	/* Check that no Flash memory operation is ongoing by checking the BSY bit in the FLASH_CR register */
@@ -88,6 +97,7 @@ void Flash_Sync_Erase(volatile uint8_t sector, uint32_t u32TimeOut)
 	FLASH->CR |= 1 << 16;
 	while((FLASH->SR & FLASH_SR_BSY) == FLASH_SR_BSY);
 	CLEAR_BIT(FLASH->CR, (FLASH_CR_SER | FLASH_CR_SNB));
+
 	return FLS_JOB_OK;
 }
 

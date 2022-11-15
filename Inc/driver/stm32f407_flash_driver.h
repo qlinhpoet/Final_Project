@@ -94,13 +94,31 @@ typedef struct
 #ifndef STM32F407_FLASH_DRIVER_H_
 #define STM32F407_FLASH_DRIVER_H_
 
+/** Flash sector start address
+  */
+#define SECTOR_0	0x08000000
+#define SECTOR_1	0x08004000
+#define SECTOR_2	0x08008000
+#define SECTOR_3	0x0800C000
+#define SECTOR_4	0x08010000
+#define SECTOR_5	0x08020000
+#define SECTOR_6	0x08040000
+#define SECTOR_7	0x08060000
+#define SECTOR_8	0x08080000
+#define SECTOR_9	0x080A0000
+#define SECTOR_10	0x080C0000
+#define SECTOR_11	0x080E0000
+
 
 void Linh_FLASH_Unlock(void);
-void Flash_Erase(volatile uint8_t sector, uint32_t u32TimeOut);
-void FLASH_Write_Word(	volatile uint32_t u32StartAddr,
+FLS_JobResultType Flash_Sync_Erase(volatile uint8_t sector, uint32_t u32TimeOut);
+FLS_JobResultType FLASH_Write_Word(	volatile uint32_t u32StartAddr,
 						const uint32_t u32Length,
 						uint32_t *BufferWrite);
-uint32_t Flash_Read(volatile uint32_t u32StartAddr);
+FLS_JobResultType Flash_Read_Driver(volatile uint32_t u32StartAddr,
+					uint32_t *pDestAddressPtr,
+					uint32_t u322Length
+					);
 
 
 #endif /* STM32F407_FLASH_DRIVER_H_ */

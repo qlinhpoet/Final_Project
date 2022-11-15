@@ -8,9 +8,14 @@
 #ifndef APP_STM32F407_FLASH_APP_H_
 #define APP_STM32F407_FLASH_APP_H_
 #include "stm32f407vg.h"
-//#include "stm32f407_flash_middleware.h"
+#include "middleware/stm32f407_flash_middleware.h"
 
 typedef uint32_t Fls_LengthType;
+
+FLS_JobResultType Fls_Read(uint32_t SourceAddress,
+                uint32_t * TargetAddressPtr,
+                uint32_t Length
+                );
 
 FLS_JobResultType Fls_Write(uint32_t TargetAddress,
                             const uint32_t * SourceAddressPtr,

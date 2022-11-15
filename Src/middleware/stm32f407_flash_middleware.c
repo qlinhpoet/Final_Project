@@ -13,7 +13,29 @@
 * @details        Route the write job to appropriate low level IP function.
 * @implements     Fls_IPW_SectorWrite_Activity
 */
-void Fls_IPW_SectorWrite(const uint32_t u32StartAddr,
+FLS_JobResultType Fls_IPW_Read(const uint32_t u32StartAddr,
+                                      const uint32_t u32Length,
+                                      const uint8_t *pJobDataSrcPtr
+                                     )
+{
+	FLS_JobResultType eLldRetVal = FLS_JOB_FAILED;
+
+    /* Decide the IP used: internal flash or external QSPI */
+#if (STD_ON == FLS_INTERNAL_SECTORS_CONFIGURED)
+	eLldRetVal = Flash_Read_Driver(u32StartAddr, pJobDataSrcPtr, u32Length);
+#endif /* (STD_ON == FLS_INTERNAL_SECTORS_CONFIGURED) */
+
+    return eLldRetVal;
+}
+
+
+
+/**
+* @brief          IP wrapper sector write function.
+* @details        Route the write job to appropriate low level IP function.
+* @implements     Fls_IPW_SectorWrite_Activity
+*/
+FLS_JobResultType Fls_IPW_SectorWrite(const uint32_t u32StartAddr,
                                       const uint32_t u32Length,
                                       const uint8_t *pJobDataSrcPtr,
                                       const boolean bAsynch
@@ -28,6 +50,7 @@ void Fls_IPW_SectorWrite(const uint32_t u32StartAddr,
 
     return eLldRetVal;
 }
+
 
 
 /**

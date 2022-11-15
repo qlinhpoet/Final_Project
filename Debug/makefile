@@ -48,8 +48,8 @@ Mydriver.bin \
 all: Mydriver.elf secondary-outputs
 
 # Tool invocations
-Mydriver.elf: $(OBJS) $(USER_OBJS) E:\Desktop\Hoc\DoAn\stm32f4\Mydriver\STM32F407VGTX_FLASH.ld
-	arm-none-eabi-gcc -o "Mydriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\Desktop\Hoc\DoAn\stm32f4\Mydriver\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Mydriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Mydriver.elf: $(OBJS) $(USER_OBJS) E:\Desktop\Hoc\DoAn\stm32f4\Final_Project\STM32F407VGTX_FLASH.ld
+	arm-none-eabi-gcc -o "Mydriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\Desktop\Hoc\DoAn\stm32f4\Final_Project\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Mydriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
