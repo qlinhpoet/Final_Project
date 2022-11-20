@@ -27,7 +27,7 @@ int main()
 	s = Flash_Read((uint32_t)0x0800C000);
 	while(1)
 	{
-		GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+		GPIO_AL_ToggleOutputPin(GPIOD, GPIO_PIN_NO_13);
 		Systick_Delay_ms(1000);
 	}
 }
@@ -56,13 +56,17 @@ void Systick_Delay_ms(uint32_t u32Delay)
 
 void GPIO_Lib_Config()
 {
-	GPIO_PeriClockControl(GPIOD, ENABLE);
+	GPIO_Handle_t GPIO_InitStrcture;
 
-	GPIO_PinConfig_t GPIO_InitStrcture;
-	GPIO_InitStrcture.GPIO_PinMode = GPIO_MODE_OUT;
-	GPIO_InitStrcture.GPIO_PinNumber = GPIO_PIN_13;
-	GPIO_InitStrcture.GPIO_Speed = GPIO_SPEED_MEDIUM;
-	GPIO_InitStrcture.GPIO_PuPdControl = GPIO_PullUp;
 
-	GPIO_Init(GPIOD, &GPIO_InitStrcture);
+
+	GPIO_InitStrcture.pGPIOx = GPIOD;
+
+	GPIO_InitStrcture.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
+	GPIO_InitStrcture.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_13;
+	GPIO_InitStrcture.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_MEDIUM;
+	GPIO_InitStrcture.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+
+	GPIO_AL_PeriClockControl(GPIOD, ENABLE);
+	GPIO_AL_Init(&GPIO_InitStrcture);
 }
