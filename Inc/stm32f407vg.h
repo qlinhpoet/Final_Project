@@ -10,8 +10,10 @@
 
 #include <stdint.h>
 #define __IO volatile
-#include <driver/stm32f407_rcc_driver.h>
-#include <driver/stm32f407_gpio_driver.h>
+#include <stm32f407_rcc_driver.h>
+#include <stm32f407_gpio_driver.h>
+#include <stm32f407_can_driver.h>
+
 
 
 #define FLS_INTERNAL_SECTORS_CONFIGURED STD_ON
@@ -68,20 +70,17 @@ typedef enum
 	Set = 1
 }Flag_Status;
 
-typedef enum
-{
-	Disable = 0,
-	Enable = 1
-}State;
+
 
 typedef enum
 {
-	false = 0,
+	false = 0U,
 	true
 }bool;
-
-
 typedef bool boolean;
+
+
+
 
 /*
  * ARM Cortex Mx Processor NVIC ISERx register Addresses
@@ -128,7 +127,7 @@ typedef bool boolean;
 *   AHBx and APBx Bus Peripheeral base addresses
 */
 #define PERIPH_BASE         0X40000000u
-#define APB1PERIPH_BASE     0X40000000U
+#define APB1PERIPH_BASE     0X40000000UL
 #define APB2PERIPH_BASE     0X40010000U
 #define AHP1PERIPH_BASE     0X40020000U
 #define AHP2PERIPH_BASE     0X50000000U
@@ -199,7 +198,7 @@ typedef bool boolean;
 #define I2C1_BASEADDRESS		(APB2PERIPH_BASE + 0X5400)
 #define I2C2_BASEADDRESS		(APB2PERIPH_BASE + 0X5800)
 #define I2C3_BASEADDRESS		(APB2PERIPH_BASE + 0X5C00)
-#define CAN1_BASEADDRESS		(APB2PERIPH_BASE + 0X6400)
+#define CAN1_BASEADDRESS		(APB1PERIPH_BASE + 0x6400UL)
 #define CAN2_BASEADDRESS		(APB2PERIPH_BASE + 0X6800)
 #define PWR_BASEADDRESS			(APB2PERIPH_BASE + 0X7000)
 #define DAC_BASEADDRESS			(APB2PERIPH_BASE + 0X7400)
@@ -231,6 +230,8 @@ typedef bool boolean;
 #define EXTI				((EXTI_RegDef_t *)(EXTI_BASEADDRESS))
 
 #define FLASH               ((FLASH_TypeDef *) FLASH_R_BASE)
+
+#define CAN1                ((CAN_TypeDef *) CAN1_BASEADDRESS)
 
 /*
 *   Clock enable marcro for GPIOx peripheral
@@ -293,6 +294,11 @@ typedef enum
     Fls_Sector_11
 
 } Fls_Sector;
+typedef enum
+{
+    E_OK         = 0U,           /**<@brief status return OK*/
+    E_NOT_OK     = 1U            /**<@brief status return NOT_OK*/
+} Std_StatusReturnType;
 
 
 #endif  /*INC_STM32F407XX_H_*/
