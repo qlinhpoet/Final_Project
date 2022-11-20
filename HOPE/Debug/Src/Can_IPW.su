@@ -1,0 +1,5 @@
+../Src/Can_IPW.c:4:22:STM32F4_CANTransmit	32	static
+../Src/Can_IPW.c:47:22:STM32F4_CANRecive	32	static
+../Src/Can_IPW.c:95:22:STM32F4_CANInit	16	static
+../Src/Can_IPW.c:140:22:STM32F4_CANStart	24	static
+../Src/Can_IPW.c:152:22:STM32F4_CANConfigFilter	24	static
