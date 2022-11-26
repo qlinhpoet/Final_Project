@@ -1,8 +1,0 @@
-stm32f407_usart_driver.c:11:7:USART_PeriClockControl	16	static
-stm32f407_usart_driver.c:19:6:USART_SentData	16	static
-stm32f407_usart_driver.c:27:9:USART_ReceiveData	16	static
-stm32f407_usart_driver.c:36:6:USART_ITConfig	16	static
-stm32f407_usart_driver.c:51:6:USART_GetITStatus	4	static
-stm32f407_usart_driver.c:60:6:USART_ClearPendingBit	4	static
-stm32f407_usart_driver.c:69:13:USART_GetFlagStatus	24	static
-stm32f407_usart_driver.c:96:6:USART_ClearFlag	16	static
