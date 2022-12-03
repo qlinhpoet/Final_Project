@@ -1,18 +1,19 @@
 /*
  * stm32f407vg_gpio_driver.c
  *
- *  Created on: Oct 18, 2022
+ *  Created on: Nov 20, 2022
  *      Author: Linh
  */
 
  #include <driver/stm32f407_gpio_driver.h>
 
- /*
-*	GPIO control
-*/
-
-void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
+ /******************************************************************************************
+ *								Peripheral Clock setup
+ ******************************************************************************************/
+uint8_t GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 {
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
+
 	if(EnorDi == ENABLE)
 	{
 		if(pGPIOx == GPIOA)
@@ -76,158 +77,207 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 			GPIOI_PCLK_DIS();
 		}
 	}
+	return eLldRetVal;
 }
 
-
-
-void GPIO_Init(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *GPIO_PinConfig)
+/******************************************************************************************
+ *								Init and De-init
+ ******************************************************************************************/
+uint8_t GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 {
-	uint32_t temp;
-	//enable GPIOx clock
-	GPIO_PeriClockControl(pGPIOx, ENABLE);
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
+
+	 uint32_t temp=0; //temp. register
+
+	 //enable the peripheral clock
+
+	 GPIO_PeriClockControl(pGPIOHandle->pGPIOx, ENABLE);
 
 	//1 . configure the mode of gpio pin
-	if(GPIO_PinConfig->GPIO_PinMode <= GPIO_MODE_ANALOG)
+
+	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG) /*No interupt usage*/
 	{
-		/*the none interrupt mode*/
-		temp = ((uint32_t)GPIO_PinConfig->GPIO_PinMode) << (2 * GPIO_PinConfig->GPIO_PinNumber);
-		pGPIOx->MODER &= ~((uint32_t)0x3 << (2 * (uint32_t)GPIO_PinConfig->GPIO_PinNumber));	//clear 2 bit
-		pGPIOx->MODER |= temp;		//gan gia tri 2 bit chon che do
+		//the non interrupt mode
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber ) );
+		pGPIOHandle->pGPIOx->MODER &= ~( 0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing before setting
+		pGPIOHandle->pGPIOx->MODER |= temp; //setting
+
 	}else
 	{
-		/*with interrupt mode- chua viet duoc :))*/
+		//this part will code later . ( interrupt mode)
+
 	}
 
 	//2. configure the speed
-	temp = ((uint32_t)GPIO_PinConfig->GPIO_Speed)<<(2 * GPIO_PinConfig->GPIO_PinNumber);
-	pGPIOx->OSPEED &= ~((uint32_t)0x3 << 2 * (uint32_t)GPIO_PinConfig->GPIO_PinNumber);			//clear 2 bit
-	pGPIOx->OSPEED |= temp;
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
+	pGPIOHandle->pGPIOx->OSPEEDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing before setting
+	pGPIOHandle->pGPIOx->OSPEEDR |= temp;
 
 	//3. configure the pupd settings
-	temp = (GPIO_PinConfig->GPIO_PuPdControl) << (2 * GPIO_PinConfig->GPIO_PinNumber);
-	pGPIOx->PUPDR &= ~((uint32_t)0x3 << (2 * (uint32_t)GPIO_PinConfig->GPIO_PinNumber));		//clear 2 bit
-	pGPIOx->PUPDR |= temp;
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
+	pGPIOHandle->pGPIOx->PUPDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing before setting
+	pGPIOHandle->pGPIOx->PUPDR |= temp;
 
-	//4. configure the otyper
-	temp = (GPIO_PinConfig->GPIOOTyper) << (GPIO_PinConfig->GPIO_PinNumber);
-	pGPIOx->OTYPER &= ~((uint32_t)0x1 << (uint32_t)(GPIO_PinConfig->GPIO_PinNumber));			//clear 1 bit
-	pGPIOx->OTYPER |= temp;
+
+	//4. configure the optype
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber );
+	pGPIOHandle->pGPIOx->OTYPER &= ~( 0x1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //clearing before setting
+	pGPIOHandle->pGPIOx->OTYPER |= temp;
 
 	//5. configure the alt functionality
-	if(GPIO_PinConfig->GPIO_PinMode == GPIO_MODE_ALTFN)
+	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN)
 	{
 		//configure the alt function registers.
 		uint8_t temp1, temp2;
-		/*	pin0-7:AFR[0]	;	pin8-15:AFR[1]	*/
-		temp1 = GPIO_PinConfig->GPIO_PinNumber / 8;
-		temp2 = GPIO_PinConfig->GPIO_PinNumber  % 8;
-		pGPIOx->AFR[temp1] &= ~(0xF << ( 4 * temp2 ) ); 										//clear 4 bit
-		pGPIOx->AFR[temp1] |= (GPIO_PinConfig->GPIO_PinAltFunMode << ( 4 * temp2 ) );
+		temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;
+		temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber  % 8;
+		pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << ( 4 * temp2 ) ); //clearing before setting
+		pGPIOHandle->pGPIOx->AFR[temp1] |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * temp2 ) );
 	}
+	return eLldRetVal;
 }
 
 
-
-void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx, GPIO_PIN_NUMBER PinNumber)
+uint8_t GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 {
-
-	pGPIOx->ODR  ^= ( 1 << PinNumber);
-	/*
-	if(pGPIOx->ODR & (1<<PinNumber))
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
+	if(pGPIOx == GPIOA)
 	{
-		pGPIOx->ODR &= ~(1<<PinNumber);
-	}else
+		GPIOA_REG_RESET();
+	}else if (pGPIOx == GPIOB)
 	{
-		pGPIOx->ODR |= 1<<PinNumber;
+		GPIOB_REG_RESET();
+	}else if (pGPIOx == GPIOC)
+	{
+		GPIOC_REG_RESET();
+	}else if (pGPIOx == GPIOD)
+	{
+		GPIOD_REG_RESET();
+	}else if (pGPIOx == GPIOE)
+	{
+		GPIOE_REG_RESET();
+	}else if (pGPIOx == GPIOF)
+	{
+		GPIOF_REG_RESET();
+	}else if (pGPIOx == GPIOG)
+	{
+		GPIOG_REG_RESET();
+	}else if (pGPIOx == GPIOH)
+	{
+		GPIOH_REG_RESET();
+	}else if (pGPIOx == GPIOI)
+	{
+		GPIOI_REG_RESET();
 	}
-	*/
+	return eLldRetVal;
 }
 
-
-
+/******************************************************************************************
+ *								Data read and write
+ ******************************************************************************************/
 uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 {
-	uint8_t ReadValue;
-	ReadValue = (uint8_t)(0x01 & ((pGPIOx->IDR) >> PinNumber));
-	return ReadValue;
+   uint8_t value;
+
+   value = (uint8_t )((pGPIOx->IDR  >> PinNumber) & 0x00000001 ) ;
+
+   return value;
+
 }
-
-
 
 
 uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx)
 {
-	return (uint16_t)(pGPIOx->IDR);
+	uint16_t value;
+
+	value = (uint16_t)pGPIOx->IDR;
+
+	return value;
 }
 
-
-
-void GPIO_WriteOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t u16Value)
+uint8_t GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value)
 {
-	pGPIOx->ODR = u16Value;
-}
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
 
-
-
-void GPIO_WriteOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t EnorDi)
-{
-	if(EnorDi == DISABLE)
+	if(Value == GPIO_PIN_SET)
 	{
-		pGPIOx->ODR &= ~(1<<PinNumber);
-	}else if(EnorDi == ENABLE)
+		//write 1 to the output data register at the bit field corresponding to the pin number
+		pGPIOx->ODR |= ( 1 << PinNumber);
+	}else
 	{
-		pGPIOx->ODR |= 1<<PinNumber;
+		//write 0
+		pGPIOx->ODR &= ~( 1 << PinNumber);
 	}
+	return eLldRetVal;
 }
 
-/*
- * IRQ Configuration and ISR handling
- */
-void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi)
+
+
+uint8_t GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
 {
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
+
+	pGPIOx->ODR  = Value;
+
+	return eLldRetVal;
+}
+
+
+
+
+uint8_t GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
+
+{
+	GPIO_JobResultType eLldRetVal = GPIO_JOB_FAILED;
+	pGPIOx->ODR  ^= ( 1 << PinNumber);
+	return eLldRetVal;
+}
+
+
+/******************************************************************************************
+ *								IRQ Configuration and ISR handling
+ ******************************************************************************************/
+uint8_t GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi)
+{
+
 	if(EnorDi == ENABLE)
-	{
-		if(IRQNumber<=31)
-		{
-			*NVIC_ICER0 |= 1<<IRQNumber;
-		}else if(IRQNumber >=32 && IRQNumber<=63)			//32 to 63
-		{
-			*NVIC_ICER1 |= 1 << (IRQNumber - 32);
-		}else if(IRQNumber >=64 && IRQNumber<=95)			//64 to 95
-		{
-			*NVIC_ICER2 |= 1 << (IRQNumber - 64);
-		}else if(IRQNumber >=96 && IRQNumber<=127)			//96 to 127
-		{
-			*NVIC_ICER3 |= 1 << (IRQNumber - 96);
-		}
-	}
-
-	if(EnorDi == DISABLE)
 	{
 		if(IRQNumber <= 31)
 		{
-			*NVIC_ICER0 &= ~(1 << IRQNumber);
-		}else if(IRQNumber >= 32 && IRQNumber <= 63)			//32 to 63
+			//program ISER0 register
+			*NVIC_ISER0 |= ( 1 << IRQNumber );
+
+		}else if(IRQNumber > 31 && IRQNumber < 64 ) //32 to 63
 		{
-			*NVIC_ICER1 &= ~(1 << (IRQNumber - 32));
-		}else if(IRQNumber >=64 && IRQNumber<=95)			//64 to 95
+			//program ISER1 register
+			*NVIC_ISER1 |= ( 1 << (IRQNumber % 32) );
+		}
+		else if(IRQNumber >= 64 && IRQNumber < 96 )
 		{
-			*NVIC_ICER2 &= ~(1 << (IRQNumber - 64));
-		}else if(IRQNumber >=96 && IRQNumber<=127)			//96 to 127
+			//program ISER2 register //64 to 95
+			*NVIC_ISER2 |= ( 1 << (IRQNumber % 64) );
+		}
+	}else
+	{
+		if(IRQNumber <= 31)
 		{
-			*NVIC_ICER3 &= ~(1 << (IRQNumber - 96));
+			//program ICER0 register
+			*NVIC_ICER0 |= ( 1 << IRQNumber );
+		}else if(IRQNumber > 31 && IRQNumber < 64 )
+		{
+			//program ICER1 register
+			*NVIC_ICER1 |= ( 1 << (IRQNumber % 32) );
+		}
+		else if(IRQNumber >= 64 && IRQNumber < 96 )
+		{
+			//program ICER2 register
+			*NVIC_ICER2 |= ( 1 << (IRQNumber % 64) );
 		}
 	}
+
 }
 
-/*
-*	config priority for IRQ
-1 thanh ghi ipr[] gom 4 fileds, dung de dat muc uu tien cho ngat tuong ung
-	Co 16 muc priority cho IRQ, duoc gan gia tri bang 4 bit trong field cua cac thanh ghi IPR[]
-	vdk stm32f4 gan cac ngat vao cac vi tri tu 0-n cua arm
-*/
-
-void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
+uint8_t GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
 {
 	/*1. find out the ipr register of IRQNumber*/
 	uint8_t iprx = IRQNumber/4;
@@ -238,16 +288,13 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
 	*(NVIC_IPR_BASE_ADDR + iprx) = (*(NVIC_IPR_BASE_ADDR + iprx)&(0xff << iprx_section*8)) | (IRQPriority << (iprx_section*8 + 4));
 }
 
-
-void GPIO_IRQHandling(uint8_t PinNumber)
+uint8_t GPIO_IRQHandling(uint8_t PinNumber)
 {
-	/*	clear pending
-		This bit is cleared by writing a ‘1’ into the bit.
-	*/
 	//clear the exti pr register corresponding to the pin number
 	if(EXTI->PR & ( 1 << PinNumber))
 	{
 		//clear
 		EXTI->PR |= ( 1 << PinNumber);
 	}
+
 }
