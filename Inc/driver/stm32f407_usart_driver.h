@@ -1,10 +1,9 @@
 
 
-#ifndef INC_STM32F407XX_GPIO_DRIVER_H_
-#define INC_STM32F407XX_GPIO_DRIVER_H_
+#ifndef INC_STM32F407XX_USART_DRIVER_H_
+#define INC_STM32F407XX_USART_DRIVER_H_
 
 #include "stm32f407vg.h"
-
 
 /*
 *   config struct for usart register
@@ -85,14 +84,13 @@ typedef struct
 
 
 void USART_PeriClockControl(USART_RegDef_t *pUSARTx, uint8_t EnorDi);
-void USART_Init();
+void USART_Init(USART_RegDef_t *pUSARTx);
 void USART_DeInit();
 void USART_SentData(USART_RegDef_t* pUSARTx, uint8_t Data);
 uint8_t USART_ReceiveData(USART_RegDef_t* pUSARTx, uint8_t Data);
-void USART_ITConfig(USART_RegDef_t *pUSARTx, uint16_t USART_IT, State EnorDi);
 void USART_GetITStatus();
 void USART_ClearPendingBit();
-Flag_Status USART_GetFlagStatus(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG);
+//Flag_Status USART_GetFlagStatus(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG);
 void USART_ClearFlag(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG);
 
 /*
