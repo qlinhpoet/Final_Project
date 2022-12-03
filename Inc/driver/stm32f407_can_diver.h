@@ -1,7 +1,13 @@
-#ifndef DRIVER_STM32F407_CAN_DRIVER_H_
-#define DRIVER_STM32F407_CAN_DRIVER_H_
+#ifndef STM32F407_CAN_DRIVER_H_
+#define STM32F407_CAN_DRIVER_H_
+/*******************************************************************************
+ * Includes
+ ******************************************************************************/
 #include "stm32f407vg.h"
-
+/*******************************************************************************
+ * Defines
+ ******************************************************************************/
+ 
 /*******************  Bit definition for CAN_RDT0R register  ******************/
 #define CAN_RDT0R_DLC_Pos      (0U)                                            
 #define CAN_RDT0R_DLC_Msk      (0xFUL << CAN_RDT0R_DLC_Pos)                     /*!< 0x0000000F */
@@ -25,7 +31,6 @@
 #define CAN_RI0R_STID_Pos      (21U)                                           
 #define CAN_RI0R_STID_Msk      (0x7FFUL << CAN_RI0R_STID_Pos)                   /*!< 0xFFE00000 */
 #define CAN_RI0R_STID          CAN_RI0R_STID_Msk                               /*!<Standard Identifier or Extended Identifier */
-//#include<stdbool.h>
 /*******************  Bit definition for CAN_RDL0R register  ******************/
 #define CAN_RDL0R_DATA0_Pos    (0U)                                            
 #define CAN_RDL0R_DATA0_Msk    (0xFFUL << CAN_RDL0R_DATA0_Pos)                  /*!< 0x000000FF */
@@ -53,7 +58,19 @@
 #define CAN_RDH0R_DATA7_Pos    (24U)                                           
 #define CAN_RDH0R_DATA7_Msk    (0xFFUL << CAN_RDH0R_DATA7_Pos)                  /*!< 0xFF000000 */
 #define CAN_RDH0R_DATA7        CAN_RDH0R_DATA7_Msk                             /*!<Data byte 7 */
-
+/*******************  Bit definition for CAN_RF0R register  *******************/
+#define CAN_RF0R_FMP0_Pos      (0U)                                            
+#define CAN_RF0R_FMP0_Msk      (0x3UL << CAN_RF0R_FMP0_Pos)                     /*!< 0x00000003 */
+#define CAN_RF0R_FMP0          CAN_RF0R_FMP0_Msk                               /*!<FIFO 0 Message Pending */
+#define CAN_RF0R_FULL0_Pos     (3U)                                            
+#define CAN_RF0R_FULL0_Msk     (0x1UL << CAN_RF0R_FULL0_Pos)                    /*!< 0x00000008 */
+#define CAN_RF0R_FULL0         CAN_RF0R_FULL0_Msk                              /*!<FIFO 0 Full */
+#define CAN_RF0R_FOVR0_Pos     (4U)                                            
+#define CAN_RF0R_FOVR0_Msk     (0x1UL << CAN_RF0R_FOVR0_Pos)                    /*!< 0x00000010 */
+#define CAN_RF0R_FOVR0         CAN_RF0R_FOVR0_Msk                              /*!<FIFO 0 Overrun */
+#define CAN_RF0R_RFOM0_Pos     (5U)                                            
+#define CAN_RF0R_RFOM0_Msk     (0x1UL << CAN_RF0R_RFOM0_Pos)                    /*!< 0x00000020 */
+#define CAN_RF0R_RFOM0         CAN_RF0R_RFOM0_Msk                              /*!<Release FIFO 0 Output Mailbox */
 /**
   * @brief  CAN Tx message header structure definition
   */
@@ -76,19 +93,6 @@ typedef struct
 
 } CAN_TxHeaderTypeDef;
 
-/*******************  Bit definition for CAN_RF0R register  *******************/
-#define CAN_RF0R_FMP0_Pos      (0U)                                            
-#define CAN_RF0R_FMP0_Msk      (0x3UL << CAN_RF0R_FMP0_Pos)                     /*!< 0x00000003 */
-#define CAN_RF0R_FMP0          CAN_RF0R_FMP0_Msk                               /*!<FIFO 0 Message Pending */
-#define CAN_RF0R_FULL0_Pos     (3U)                                            
-#define CAN_RF0R_FULL0_Msk     (0x1UL << CAN_RF0R_FULL0_Pos)                    /*!< 0x00000008 */
-#define CAN_RF0R_FULL0         CAN_RF0R_FULL0_Msk                              /*!<FIFO 0 Full */
-#define CAN_RF0R_FOVR0_Pos     (4U)                                            
-#define CAN_RF0R_FOVR0_Msk     (0x1UL << CAN_RF0R_FOVR0_Pos)                    /*!< 0x00000010 */
-#define CAN_RF0R_FOVR0         CAN_RF0R_FOVR0_Msk                              /*!<FIFO 0 Overrun */
-#define CAN_RF0R_RFOM0_Pos     (5U)                                            
-#define CAN_RF0R_RFOM0_Msk     (0x1UL << CAN_RF0R_RFOM0_Pos)                    /*!< 0x00000020 */
-#define CAN_RF0R_RFOM0         CAN_RF0R_RFOM0_Msk                              /*!<Release FIFO 0 Output Mailbox */
 /**
   * @brief  CAN Rx message header structure definition
   */
@@ -283,29 +287,229 @@ typedef struct
                                        This parameter must be a number between Min_Data = 0 and Max_Data = 27. */
 
 } CAN_FilterTypeDef;
-
+/*******************************************************************************
+ * API
+ ******************************************************************************/
+/*!
+ * @brief
+ * get status transmit
+ * @param Addr: void
+ * @return
+ * return value of regiser TSR
+ */
 uint32_t CAN_Driver_TSR(void);
+
+/*!
+ * @brief
+ * set up ID 
+ * @param Addr: uint16_t ID
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_SetUpID(uint16_t ID);
+
+/*!
+ * @brief
+ * set up lenght of data 
+ * @param Addr: uint_t Length_Data
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_SetUpLD(uint8_t Length_Data);
+
+/*!
+ * @brief
+ * write data into resgister 
+ * @param Addr: uint8_t cData[]
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_WriteData(uint8_t cData[]);
+
+/*!
+ * @brief
+ * set transsission  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_IPVSetTransmission( void);
+
+/*!
+ * @brief
+ * get status of mailbox  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_StatusMailBox( void);
+
+/*!
+ * @brief
+ * get ID  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint16_t CAN_GetID(void);
+
+/*!
+ * @brief
+ * get data length  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_GetDataLength( void);
+/*!
+ * @brief
+ * Get data  
+ * @param Addr: uint8_t cData[]
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_ReadData(uint8_t cData[]);
+
+/*!
+ * @brief
+ * Release a message 
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_Release( void);
+
+/*!
+ * @brief
+ * exit sleep mode  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_ExitSleepMode( void);
+
+/*!
+ * @brief
+ * trigger time for Reciver  
+ * @param Addr: uint8_t Mode
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_RXTimeTrigger(uint8_t Mode);
+
+/*!
+ * @brief
+ * set mode auto retansmit  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_AutoRetransmit( void);
+
+/*!
+ * @brief
+ * lock FIFO mode  
+ * @param Addr: void
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_LockFIFOMode( void);
+/*!
+ * @brief
+ * set bit time  
+ * @param Addr: CAN_HandleTypeDef *hcan
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_SetBitTime(CAN_HandleTypeDef *hcan);
-uint8_t CAN_SetMCRINRQ(void);
-uint8_t CAN_InitModeFilter(uint8_t Moden);
+/*!
+ * @brief
+ * set MCR init mode  
+ * @param Addr: uint8_t Mode
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_SetMCRINRQ(uint8_t Mode);
+
+/*!
+ * @brief
+ * set mode filter  
+ * @param Addr: uint8_t mode
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_InitModeFilter(uint8_t Mode);
+
+/*!
+ * @brief
+ * DeInit filer  
+ * @param Addr: uint32_t bank
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_DeInitFilter(uint32_t bank);
-uint8_t CAN_FilterScale(uint32_t bank,CAN_FilterTypeDef *sFilterConfig);
+
+/*!
+ * @brief
+ * set filter scale  
+ * @param Addr: uint32_t bank
+ 				CAN_FilterTypeDef *sFilterConfig
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_FilterScale(uint32_t bank, CAN_FilterTypeDef *sFilterConfig);
+
+/*!
+ * @brief
+ * set filter mode  
+ * @param Addr: uint32_t bank
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_FilterMode(uint32_t bank);
+/*!
+ * @brief
+ * set filter FIFOAs  
+ * @param Addr: uint32_t bank
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_FilterFIFOAs(uint32_t bank);
+
+/*!
+ * @brief
+ * Init filer  
+ * @param Addr: uint32_t bank
+ * @return
+ * return satatus of function
+ */
 uint8_t CAN_InitFilter(uint32_t bank);
 
- #endif /*DRIVER_STM32F407_CAN_DRIVER_H_*/
+/*!
+ * @brief
+ * set time1  
+ * @param Addr: uint8_t Time1
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_SetBitTime1(uint8_t Time1);
+/*!
+ * @brief
+ * Set Time2  
+ * @param Addr: uint8_t Time2
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_SetBitTime2(uint8_t Time2);
+
+/*!
+ * @brief
+ * set value for bit BRP  
+ * @param Addr: uint8_t BRP
+ * @return
+ * return satatus of function
+ */
+uint8_t CAN_setBitBRP(uint8_t BRP);
+
+ #endif /*STM32F407_CAN_DRIVER_H_*/
 
