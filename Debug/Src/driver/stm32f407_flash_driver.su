@@ -1,5 +1,0 @@
-stm32f407_flash_driver.c:11:19:Flash_Read_Driver	32	static
-stm32f407_flash_driver.c:25:19:FLASH_Write_Word	32	static
-stm32f407_flash_driver.c:54:19:Flash_ASync_Erase	16	static
-stm32f407_flash_driver.c:59:19:Flash_Sync_Erase	24	static
-stm32f407_flash_driver.c:105:6:Linh_FLASH_Unlock	4	static

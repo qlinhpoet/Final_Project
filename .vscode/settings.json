@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "stm32f407_gpio_driver.h": "c"
+        "stm32f407_gpio_driver.h": "c",
+        "can.h": "c",
+        "stm32f407_can_middleware.h": "c",
+        "can_ipw.h": "c"
     }
 }
