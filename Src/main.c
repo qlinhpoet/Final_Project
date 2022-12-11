@@ -31,12 +31,14 @@ uint32_t TxMailbox;
 uint32_t RxFifo;
 
 /* uart*/
-uint8_t UartTx[9]= "";
-uint32_t v = 47;
-uint32_t s = 33;
-uint32_t p = 102;
-uint32_t Total = 30;
-void TachSo(uint32_t v, uint32_t s, uint32_t p, uint8_t *Tx);
+uint8_t UartTx[17]= "";
+uint32_t v = 90;
+float s = 11.0;
+uint32_t temps = 0;
+uint32_t p = 102123;
+uint32_t Total = 30.5;
+uint32_t t =25;
+void TachSo(uint32_t t,uint32_t v, uint32_t s, uint32_t p, uint8_t *Tx);
 uint32_t huart5;
 uint32_t BufferWrite[3] = {0x1,0x2,0x3};
 uint32_t *BufferRead;
@@ -54,16 +56,23 @@ int main()
 
 	  UART5_Config();
 	  GPIO_Lib_Config();
-
-	//Fls_Read((uint32_t)SECTOR_3, &Total, 3);
-	Fls_Erase(Fls_Sector_3, 1);
-	Fls_Write((uint32_t)SECTOR_3, &Total, 1, FALSE);
-	Fls_Read((uint32_t)SECTOR_3, &Total, 3);
+	  /*doc quang duong tu flash*/
+	  Fls_Read((uint32_t)SECTOR_3, &temps, 1);
+	  if(temps == 0xff)
+	  {
+		  temps = s*10.0;
+	  }
+	  s = temps / 10.0;
 	while(1)
 	{
-		TachSo(v,Total,p,&UartTx);
-		//UART_Transmit1(&huart5, &Tx, 9, 100);
-//		GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+		s+=v/3600.0;				//mo phong dang chay
+		temps = s*10.0;
+		Fls_Erase(Fls_Sector_3, 1);
+		Fls_Write((uint32_t)SECTOR_3, &temps, 1, FALSE);
+
+		TachSo(t, v,temps,p,&UartTx);
+		UART_Transmit1(&huart5, &UartTx, 17, 100);
+		GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 		Systick_Delay_ms(2000);
 	}
 }
@@ -79,12 +88,13 @@ void CAN1_RX0_IRQHandler(void)
 	if(RxHeader.StdId == 0x179)
 	{
 		DataNode1 = RxData[0];
-		p=DataNode1;
+		p=RxData[1] + (RxData[2]<<8) + (RxData[3]<<16) + (RxData[4]<<24);
 	}
 	if(RxHeader.StdId == 0x200)
 	{
 		DataNode2 = RxData[0];
 		v=DataNode2;
+		s+=v/3600.0;
 	}
 	//Systick_Delay_ms(200);
 
@@ -187,15 +197,29 @@ void GPIO_Lib_Config()
 	GPIO_Init(GPIOD, &GPIO_InitStrcture3);
 }
 
-void TachSo(uint32_t v, uint32_t s, uint32_t p, uint8_t *UartTx)
+void TachSo(uint32_t t,uint32_t v, uint32_t s, uint32_t p, uint8_t *UartTx)
 {
-	for(int i=8; i>=6; i--)
+	for(int i=16; i>=15; i--)
+	{
+		*(UartTx+i) = t % 10;
+		t = (t - *(UartTx+i)) / 10;
+		*(UartTx+i) += 48;
+	}
+	*(UartTx+14) = ';';
+	for(int i=13; i>=8; i--)
 	{
 		*(UartTx+i) = p % 10;
 		p = (p - *(UartTx+i)) / 10;
 		*(UartTx+i) += 48;
 	}
-	*(UartTx+5) = ';';
+	*(UartTx+7) = ';';
+
+	/*phan le*/
+	{
+		*(UartTx+6) = s % 10 + 48;
+		*(UartTx+5) = '.';
+		s=s/10;
+	}
 	for(int i=4; i>=3; i--)
 	{
 		*(UartTx+i) = s % 10;
