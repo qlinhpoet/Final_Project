@@ -1,0 +1,6 @@
+stm32f407_can_app.c:4:22:CAN_AddTxMessage	32	static
+stm32f407_can_app.c:14:22:CAN_GetRxMessage	32	static
+stm32f407_can_app.c:25:22:CAN_Init	24	static
+stm32f407_can_app.c:35:22:CAN_Start	24	static
+stm32f407_can_app.c:45:22:CAN_ConfigFilter	24	static
+stm32f407_can_app.c:55:22:CAN_BaudRate	24	static

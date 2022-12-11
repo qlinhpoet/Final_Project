@@ -10,10 +10,13 @@
 
 #include <stdint.h>
 #define __IO volatile
+#define __IOM volatile
+#define __OM volatile					  
+					 
 #include <driver/stm32f407_rcc_driver.h>
 #include <driver/stm32f407_gpio_driver.h>
 #include <driver/stm32f407_usart_driver.h>
-#include "../../Final_Project/Inc/driver/stm32f407_can_driver.h"
+#include <driver/stm32f407_can_driver.h>
 
 #define FLS_INTERNAL_SECTORS_CONFIGURED STD_ON
 
@@ -75,12 +78,27 @@ typedef enum
 	false = 0,
 	true
 }bool;
-
 typedef enum
 {
   HAL_UNLOCKED = 0x00U,
   HAL_LOCKED   = 0x01U
 } HAL_LockTypeDef;
+typedef struct
+{
+  __IOM uint32_t ISER[8U];               /*!< Offset: 0x000 (R/W)  Interrupt Set Enable Register */
+        uint32_t RESERVED0[24U];
+  __IOM uint32_t ICER[8U];               /*!< Offset: 0x080 (R/W)  Interrupt Clear Enable Register */
+        uint32_t RSERVED1[24U];
+  __IOM uint32_t ISPR[8U];               /*!< Offset: 0x100 (R/W)  Interrupt Set Pending Register */
+        uint32_t RESERVED2[24U];
+  __IOM uint32_t ICPR[8U];               /*!< Offset: 0x180 (R/W)  Interrupt Clear Pending Register */
+        uint32_t RESERVED3[24U];
+  __IOM uint32_t IABR[8U];               /*!< Offset: 0x200 (R/W)  Interrupt Active bit Register */
+        uint32_t RESERVED4[56U];
+  __IOM uint8_t  IP[240U];               /*!< Offset: 0x300 (R/W)  Interrupt Priority Register (8Bit wide) */
+        uint32_t RESERVED5[644U];
+  __OM  uint32_t STIR;                   /*!< Offset: 0xE00 ( /W)  Software Trigger Interrupt Register */
+}  NVIC_Type;
 
 typedef bool boolean;
 
@@ -129,7 +147,7 @@ typedef bool boolean;
 *   AHBx and APBx Bus Peripheeral base addresses
 */
 #define PERIPH_BASE         0X40000000u
-#define APB1PERIPH_BASE     0X40000000U
+#define APB1PERIPH_BASE     0X40000000UL
 #define APB2PERIPH_BASE     0X40010000U
 #define AHP1PERIPH_BASE     0X40020000U
 #define AHP2PERIPH_BASE     0X50000000U
@@ -155,7 +173,7 @@ typedef bool boolean;
 #define BKPSRAM_BASEADDRESS (AHP1PERIPH_BASE + 0x4000U)
 #define DMA1_BASEADDRESS    (AHP1PERIPH_BASE + 0x6000U)
 #define DMA2_BASEADDRESS    (AHP1PERIPH_BASE + 0x6400U)
-
+#define NVIC                ((NVIC_Type      *)(0xE000E100))															
 #define FLASH_R_BASE          (AHP1PERIPH_BASE + 0x3C00UL)
 
 
@@ -199,7 +217,7 @@ typedef bool boolean;
 #define I2C1_BASEADDRESS		(APB2PERIPH_BASE + 0X5400)
 #define I2C2_BASEADDRESS		(APB2PERIPH_BASE + 0X5800)
 #define I2C3_BASEADDRESS		(APB2PERIPH_BASE + 0X5C00)
-#define CAN1_BASEADDRESS		(APB1PERIPH_BASE + 0X6400)
+#define CAN1_BASEADDRESS		(APB1PERIPH_BASE + 0X6400UL)
 #define CAN2_BASEADDRESS		(APB2PERIPH_BASE + 0X6800)
 #define PWR_BASEADDRESS			(APB2PERIPH_BASE + 0X7000)
 #define DAC_BASEADDRESS			(APB2PERIPH_BASE + 0X7400)

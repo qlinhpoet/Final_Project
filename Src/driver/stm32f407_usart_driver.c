@@ -151,3 +151,51 @@ void USART_ClearFlag(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG)
     /*all bit of usart->sr are set by hardware*/
     pUSARTx->SR = (uint16_t)~(USART_FLAG);
 }
+
+void UART5_Config()
+{
+	  /* Peripheral clock enable */
+	  RCC->APB1ENR |= 1<<20;
+	  RCC->AHB1ENR |= 1<<2;
+	  RCC->AHB1ENR |= 1<<3;
+
+		/*
+			UART5 GPIO Configuration
+			PC12     ------> UART5_TX
+			PD2     ------> UART5_RX
+		*/
+	  	GPIO_PinConfig_t GPIO_InitStruct;
+		GPIO_InitStruct.GPIO_PinNumber = GPIO_PIN_12;
+		GPIO_InitStruct.GPIO_PinMode = 0x00000002U;
+		GPIO_InitStruct.GPIO_PuPdControl = GPIO_PullUp;
+		GPIO_InitStruct.GPIO_Speed = GPIO_SPEED_VeryHIGH;
+		GPIO_InitStruct.GPIO_PinAltFunMode = AF8;
+		GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+		GPIO_InitStruct.GPIO_PinNumber = GPIO_PIN_2;
+		GPIO_InitStruct.GPIO_PinMode = 0x00000002U;
+		GPIO_InitStruct.GPIO_PuPdControl = GPIO_PullUp;
+		GPIO_InitStruct.GPIO_Speed = GPIO_SPEED_VeryHIGH;
+		GPIO_InitStruct.GPIO_PinAltFunMode = AF8;
+		GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+		UART5->CR1 &= ~(1 << 13);
+		/* Set the UART Communication parameters */
+		UART5->BRR = 0x683;
+		UART5->CR1 = 0x0c;
+		/* Enable the peripheral */
+		UART5->CR1 |= 1UL << 13;
+}
+
+void UART_Transmit1(uint32_t *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout)
+{
+    uint8_t TxXferSize = Size;
+    uint8_t TxXferCount = Size;
+
+    while (TxXferCount > 0U)
+    {
+    	while (((UART5->SR & (1 << 7)) == (1 << 7) ? SET : RESET) == RESET);
+      TxXferCount--;
+      UART5->DR = (*pData++ & (uint8_t)0xFF);
+    }
+}

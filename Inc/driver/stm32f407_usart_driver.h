@@ -92,7 +92,8 @@ void USART_GetITStatus();
 void USART_ClearPendingBit();
 //Flag_Status USART_GetFlagStatus(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG);
 void USART_ClearFlag(USART_RegDef_t* pUSARTx, uint16_t USART_FLAG);
-
+void UART5_Config();
+void UART_Transmit1(uint32_t *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 /*
 USART Driver for STM32F1
 - USART_Init

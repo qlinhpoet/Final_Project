@@ -1,5 +1,5 @@
-#include <middleware/Can_IPW.h>
-#include <app/Can.h>
+#include <app/stm32f407_can_app.h>
+#include <middleware/stm32f407_can_middleware.h>
 
 Std_StatusReturnType CAN_AddTxMessage(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint8_t aData[], uint32_t *pTxMailbox)
 {
@@ -52,3 +52,14 @@ Std_StatusReturnType CAN_ConfigFilter(CAN_HandleTypeDef *hcan, CAN_FilterTypeDef
 
 	return RetVal;
 }
+Std_StatusReturnType CAN_BaudRate(uint32_t BaudRate)
+{
+	Std_StatusReturnType RetVal = E_OK;
+	if(STM32F4_CANSetBaudrate(BaudRate) != E_OK)
+	{
+		RetVal = E_NOT_OK;
+	}
+
+	return RetVal;
+}
+

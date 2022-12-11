@@ -1,5 +1,5 @@
-#ifndef DRIVER_STM32F407_CAN_DRIVER_H_
-#define DRIVER_STM32F407_CAN_DRIVER_H_
+#ifndef STM32F407_CAN_DRIVER_H_
+#define STM32F407_CAN_DRIVER_H_
 #include "stm32f407vg.h"
 
 /*******************  Bit definition for CAN_RDT0R register  ******************/
@@ -299,13 +299,16 @@ uint8_t CAN_RXTimeTrigger(uint8_t Mode);
 uint8_t CAN_AutoRetransmit( void);
 uint8_t CAN_LockFIFOMode( void);
 uint8_t CAN_SetBitTime(CAN_HandleTypeDef *hcan);
-uint8_t CAN_SetMCRINRQ(void);
-uint8_t CAN_InitModeFilter(uint8_t Moden);
+uint8_t CAN_SetMCRINRQ(uint8_t Mode);
+uint8_t CAN_InitModeFilter(uint8_t Mode);
 uint8_t CAN_DeInitFilter(uint32_t bank);
 uint8_t CAN_FilterScale(uint32_t bank,CAN_FilterTypeDef *sFilterConfig);
 uint8_t CAN_FilterMode(uint32_t bank);
 uint8_t CAN_FilterFIFOAs(uint32_t bank);
 uint8_t CAN_InitFilter(uint32_t bank);
+uint8_t CAN_SetBitTime1(uint8_t Time1);
+uint8_t CAN_SetBitTime2(uint8_t Time2);
+uint8_t CAN_setBitBRP(uint8_t BRP);
 
- #endif /*DRIVER_STM32F407_CAN_DRIVER_H_*/
+ #endif /*STM32F407_CAN_DRIVER_H_*/
 
