@@ -32,7 +32,7 @@ uint32_t RxFifo;
 
 /* uart*/
 uint8_t UartTx[17]= "";
-uint32_t v = 90;
+uint32_t v = 69;
 float s = 11.0;
 uint32_t temps = 0;
 uint32_t p = 102123;
@@ -58,21 +58,21 @@ int main()
 	  GPIO_Lib_Config();
 	  /*doc quang duong tu flash*/
 	  Fls_Read((uint32_t)SECTOR_3, &temps, 1);
-	  if(temps == 0xff)
+	  if(temps == 0xffffffff)
 	  {
 		  temps = s*10.0;
 	  }
 	  s = temps / 10.0;
 	while(1)
 	{
-		s+=v/3600.0;				//mo phong dang chay
+		//s+=v/3600.0;				//mo phong dang chay
 		temps = s*10.0;
 		Fls_Erase(Fls_Sector_3, 1);
 		Fls_Write((uint32_t)SECTOR_3, &temps, 1, FALSE);
 
 		TachSo(t, v,temps,p,&UartTx);
 		UART_Transmit1(&huart5, &UartTx, 17, 100);
-		GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+		GPIO_TogglePin(GPIOD, GPIO_PIN_13);	//led cam
 		Systick_Delay_ms(2000);
 	}
 }
@@ -83,18 +83,19 @@ void CAN_SetInterrupt(void)
 }
 void CAN1_RX0_IRQHandler(void)
 {
-	GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+	GPIO_TogglePin(GPIOD, GPIO_PIN_15);		//led xanh
 	CAN_GetRxMessage(&hcan1,0U,&RxHeader, RxData);
 	if(RxHeader.StdId == 0x179)
 	{
 		DataNode1 = RxData[0];
+		t = DataNode1;
 		p=RxData[1] + (RxData[2]<<8) + (RxData[3]<<16) + (RxData[4]<<24);
 	}
 	if(RxHeader.StdId == 0x200)
 	{
 		DataNode2 = RxData[0];
 		v=DataNode2;
-		s+=v/3600.0;
+		s+=2*v/3600.0;
 	}
 	//Systick_Delay_ms(200);
 
@@ -190,10 +191,21 @@ void GPIO_Lib_Config()
 
 	GPIO_PinConfig_t GPIO_InitStrcture3;
 	GPIO_InitStrcture3.GPIO_PinMode = GPIO_MODE_OUT;
+	GPIO_InitStrcture3.GPIO_PinNumber = GPIO_PIN_14;
+	GPIO_InitStrcture3.GPIO_Speed = GPIO_SPEED_MEDIUM;
+	GPIO_InitStrcture3.GPIO_PuPdControl = GPIO_PullUp;
+	GPIO_Init(GPIOD, &GPIO_InitStrcture3);
+
+	GPIO_InitStrcture3.GPIO_PinMode = GPIO_MODE_OUT;
 	GPIO_InitStrcture3.GPIO_PinNumber = GPIO_PIN_13;
 	GPIO_InitStrcture3.GPIO_Speed = GPIO_SPEED_MEDIUM;
 	GPIO_InitStrcture3.GPIO_PuPdControl = GPIO_PullUp;
+	GPIO_Init(GPIOD, &GPIO_InitStrcture3);
 
+	GPIO_InitStrcture3.GPIO_PinMode = GPIO_MODE_OUT;
+	GPIO_InitStrcture3.GPIO_PinNumber = GPIO_PIN_15;
+	GPIO_InitStrcture3.GPIO_Speed = GPIO_SPEED_MEDIUM;
+	GPIO_InitStrcture3.GPIO_PuPdControl = GPIO_PullUp;
 	GPIO_Init(GPIOD, &GPIO_InitStrcture3);
 }
 

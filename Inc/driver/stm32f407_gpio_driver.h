@@ -42,10 +42,10 @@ typedef enum
     GPIO_PIN_9,
     GPIO_PIN_10,
     GPIO_PIN_11,
-    GPIO_PIN_12,
-    GPIO_PIN_13,
-    GPIO_PIN_14,
-    GPIO_PIN_15
+    GPIO_PIN_12,	//led vang
+    GPIO_PIN_13,	//led cam
+    GPIO_PIN_14,	//led do
+    GPIO_PIN_15		//led xanh
 }GPIO_PIN_NUMBER;
 
 typedef enum
