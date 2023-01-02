@@ -1,0 +1,8 @@
+stm32f407_gpio_app.c:25:9:GPIO_AL_PeriClockControl	24	static
+stm32f407_gpio_app.c:54:8:GPIO_AL_Init	24	static
+stm32f407_gpio_app.c:78:8:GPIO_AL__DeInit	24	static
+stm32f407_gpio_app.c:89:9:GPIO_AL_ReadFromInputPin	24	static
+stm32f407_gpio_app.c:100:10:GPIO_AL_ReadFromInputPort	24	static
+stm32f407_gpio_app.c:126:8:GPIO_AL_WriteToOutputPin	24	static
+stm32f407_gpio_app.c:151:8:GPIO_AL_WriteToOutputPort	24	static
+stm32f407_gpio_app.c:176:8:GPIO_AL_ToggleOutputPin	24	static

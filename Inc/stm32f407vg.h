@@ -281,6 +281,18 @@ typedef bool boolean;
 #define GPIOH_PCLK_DIS()     (RCC->AHB1ENR &= ~(1<<7))
 #define GPIOI_PCLK_DIS()     (RCC->AHB1ENR &= ~(1<<8))
 
+/**
+* @brief    : GPIO job return status
+*/
+typedef enum
+{
+    GPIO_JOB_OK = 0,               /**< @brief The job has been finished succesfully */
+    GPIO_JOB_FAILED,               /**< @brief The job has not been finished succesfully */
+	GPIO_JOB_PENDING,              /**< @brief The job has not yet been finished */
+	GPIO_JOB_CANCELED,             /**< @brief The job has been canceled */
+	GPIO_BLOCK_INCONSISTENT,       /**< @brief The requested block is inconsistent, it may contain corrupted data */
+	GPIO_BLOCK_INVALID             /**< @brief The requested block has been marked as invalid, the requested operation can not be performed */
+}GPIO_JobResultType;
 
 /*						FLASH					*/
 

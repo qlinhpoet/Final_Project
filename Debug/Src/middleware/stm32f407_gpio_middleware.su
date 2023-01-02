@@ -1,0 +1,8 @@
+stm32f407_gpio_middleware.c:18:8:GPIO_IPW_PeriClockControl	24	static
+stm32f407_gpio_middleware.c:32:8:GPIO_IPW_Init	32	static
+stm32f407_gpio_middleware.c:46:8:GPIO_IPW__DeInit	24	static
+stm32f407_gpio_middleware.c:60:9:GPIO_IPW_ReadFromInputPin	24	static
+stm32f407_gpio_middleware.c:74:10:GPIO_IPW_ReadFromInputPort	24	static
+stm32f407_gpio_middleware.c:88:8:GPIO_IPW_WriteToOutputPin	24	static
+stm32f407_gpio_middleware.c:102:8:GPIO_IPW_WriteToOutputPort	24	static
+stm32f407_gpio_middleware.c:116:8:GPIO_IPW_ToggleOutputPin	24	static
